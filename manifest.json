@@ -1,0 +1,20 @@
+{
+  "name": "緣來喝茶自我檢測",
+  "short_name": "自我檢測",
+  "description": "人格特質與中醫體質自我檢測。生活參考，非醫療診斷。純本機計算，不上傳任何資料。",
+  "lang": "zh-Hant",
+  "dir": "ltr",
+  "id": "https://qboy945.github.io/selftest/",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#eef2f4",
+  "theme_color": "#1f4e5f",
+  "categories": ["health", "lifestyle"],
+  "icons": [
+    { "src": "./icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "./icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "./icon-maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ]
+}

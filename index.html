@@ -1,0 +1,540 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#1f4e5f">
+<link rel="manifest" href="./manifest.json">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="自我檢測">
+<meta name="description" content="人格特質與中醫體質自我檢測。純本機計算，不上傳任何資料。">
+<title>緣來喝茶自我檢測</title>
+<style>
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+body{margin:0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Noto Sans TC","Microsoft JhengHei",sans-serif;
+  background:#eef2f4;color:#20303a;font-size:16px;line-height:1.6;padding-bottom:96px}
+header{background:linear-gradient(135deg,#1f4e5f,#2e7d8f);color:#fff;padding:22px 18px 18px;position:sticky;top:0;z-index:10;
+  box-shadow:0 2px 12px rgba(0,0,0,.18)}
+header .brand{font-size:12px;font-weight:600;letter-spacing:1.5px;color:rgba(255,255,255,.82);margin-bottom:4px}
+header h1{margin:0;font-size:19px;font-weight:700;letter-spacing:.5px}
+header p{margin:6px 0 0;font-size:12.5px;opacity:.85}
+main{padding:16px 14px;max-width:560px;margin:0 auto}
+.card{background:#fff;border-radius:14px;padding:16px;margin-bottom:14px;box-shadow:0 1px 4px rgba(20,50,60,.08)}
+.card h2{margin:0 0 14px;font-size:15px;font-weight:700;color:#1f4e5f;padding-bottom:9px;
+  border-bottom:2px solid #e3ecef;display:flex;align-items:center;gap:7px}
+.card h2 span.n{background:#1f4e5f;color:#fff;width:20px;height:20px;border-radius:50%;font-size:12px;
+  display:inline-flex;align-items:center;justify-content:center;flex:0 0 auto}
+.btn{width:100%;padding:16px;font-size:17px;font-weight:700;font-family:inherit;color:#fff;
+  background:linear-gradient(135deg,#1f4e5f,#2e7d8f);border:none;border-radius:12px;cursor:pointer;
+  box-shadow:0 3px 12px rgba(31,78,95,.3);letter-spacing:.5px}
+.btn:active{transform:scale(.985)}
+.btn.ghost{background:#fff;color:#1f4e5f;border:2px solid #cfdde2;box-shadow:none;font-size:15px;padding:13px}
+.btn:disabled{opacity:.45;box-shadow:none}
+.hide{display:none!important}
+/* 首頁：兩個檢測入口 */
+.entry{display:block;width:100%;text-align:left;font-family:inherit;background:#fff;border:1.5px solid #e3ecef;
+  border-radius:14px;padding:16px 16px 15px;margin-bottom:12px;cursor:pointer;box-shadow:0 1px 4px rgba(20,50,60,.08);
+  transition:.15s;position:relative;overflow:hidden}
+.entry:active{transform:scale(.99);border-color:#2e7d8f}
+.entry .ico{font-size:26px;line-height:1;margin-bottom:8px;display:block}
+.entry b{display:block;font-size:17px;color:#1f4e5f;font-weight:800;margin-bottom:3px}
+.entry small{display:block;font-size:13px;color:#7d949e;line-height:1.55}
+.entry .meta{margin-top:9px;font-size:11.5px;color:#a8bcc5}
+.entry .go{position:absolute;right:16px;top:50%;transform:translateY(-50%);font-size:20px;color:#cfdde2}
+/* 題目 */
+.qbar{position:sticky;top:0;z-index:9;background:#eef2f4;padding:8px 0 10px;margin:-4px 0 6px}
+.qbar .track{height:6px;border-radius:4px;background:#dde7ea;overflow:hidden}
+.qbar .track i{display:block;height:100%;width:0;border-radius:4px;background:linear-gradient(90deg,#2e7d8f,#4fa8b8);
+  transition:width .25s}
+.qbar .txt{font-size:11.5px;color:#8fa3ac;text-align:right;margin-top:5px}
+.qrow{border-bottom:1px solid #f0f4f6;padding:13px 0 11px}
+.qrow:last-child{border-bottom:none}
+.qrow .qt{font-size:14.5px;color:#20303a;line-height:1.55;margin-bottom:9px}
+.qrow .qt em{font-style:normal;color:#a8bcc5;font-size:12px;margin-right:5px}
+.likert{display:flex;gap:6px}
+.likert button{flex:1;padding:9px 0;font-family:inherit;font-size:14px;font-weight:700;color:#5c7480;
+  background:#f7fafb;border:1.5px solid #e3ecef;border-radius:9px;cursor:pointer}
+.likert button.on{background:#1f4e5f;border-color:#1f4e5f;color:#fff}
+.legend{display:flex;justify-content:space-between;font-size:11px;color:#a8bcc5;margin:0 2px 8px}
+/* 結果 */
+.big{text-align:center;padding:4px 0 14px}
+.big b{display:block;font-size:26px;font-weight:800;color:#1f4e5f;letter-spacing:-.5px;line-height:1.25}
+.big small{font-size:12.5px;color:#7d949e}
+.dim{padding:12px 0;border-bottom:1px solid #f2f6f8}
+.dim:last-child{border-bottom:none}
+.dim .top{display:flex;align-items:baseline;justify-content:space-between;gap:8px;margin-bottom:5px}
+.dim .top b{font-size:14.5px;color:#20303a}
+.dim .top .lv{font-size:12px;font-weight:700;padding:1px 7px;border-radius:5px;flex:0 0 auto}
+.lv.hi{background:#fdecec;color:#c0392b}
+.lv.mid{background:#eef3f5;color:#5c7480}
+.lv.lo{background:#e8f2ff;color:#2563a8}
+.dim .bar{height:8px;border-radius:5px;background:#eef3f5;overflow:hidden}
+.dim .bar i{display:block;height:100%;border-radius:5px;background:linear-gradient(90deg,#2e7d8f,#4fa8b8)}
+.dim .bar i.hi{background:linear-gradient(90deg,#d94a4a,#e87676)}
+.dim .bar i.lo{background:linear-gradient(90deg,#2563a8,#5b93d6)}
+.dim .sc{font-size:12px;color:#a8bcc5;margin-left:6px;font-weight:600}
+.dim p{margin:8px 0 0;font-size:13.5px;color:#5c7480;line-height:1.65}
+.warn{background:#fff5f5;border-left:4px solid #d94a4a;border-radius:8px;padding:12px 13px;font-size:13.5px;
+  color:#8a2b2b;margin:12px 0 0;line-height:1.6}
+.ok{background:#f2fbf5;border-left:4px solid #2e9e5b;border-radius:8px;padding:12px 13px;font-size:13.5px;
+  color:#1e6b3c;margin:12px 0 0;line-height:1.6}
+.amber{background:#fffbf0;border-left:4px solid #d99b2b;border-radius:8px;padding:12px 13px;font-size:13.5px;
+  color:#8a6d1a;margin:12px 0 0;line-height:1.6}
+.disc{font-size:12px;color:#8fa3ac;line-height:1.75;margin:16px 0 6px}
+.stamp{text-align:center;font-size:11px;color:#a8bcc5;margin:0 0 8px}
+.askbar{position:fixed;left:0;right:0;bottom:0;z-index:60;display:flex;align-items:center;gap:10px;
+  padding:10px 14px calc(10px + env(safe-area-inset-bottom));background:rgba(255,255,255,.97);
+  border-top:1px solid #e3ecef;box-shadow:0 -2px 14px rgba(15,23,42,.08);backdrop-filter:blur(8px)}
+.askbar .txt{flex:1;min-width:0;font-size:12px;line-height:1.45;color:#8fa3ac}
+.askbar .txt b{display:block;font-size:13px;color:#20303a;margin-bottom:1px}
+.askbar a{flex:0 0 auto;display:inline-flex;align-items:center;gap:5px;text-decoration:none;
+  background:#06c755;color:#fff;font-size:13.5px;font-weight:800;padding:10px 16px;border-radius:24px;white-space:nowrap}
+.askbar a:active{opacity:.85}
+@media print{header{position:static!important}.askbar,#submit,#back,.btn,.qbar{display:none!important}
+  body{padding-bottom:0!important;background:#fff!important}.card{box-shadow:none!important;border:1px solid #dde6ea;break-inside:avoid}}
+</style>
+</head>
+<body>
+<header>
+  <div class="brand">緣來喝茶圓滿人生</div>
+  <h1 id="htitle">自我檢測</h1>
+  <p id="hsub">人格特質 ｜ 中醫體質 ｜ 純本機計算，資料不外傳</p>
+</header>
+
+<main>
+  <!-- ══ 首頁 ══ -->
+  <div id="home">
+    <div class="card" style="padding:14px 16px">
+      <p style="margin:0;font-size:13.5px;color:#5c7480;line-height:1.65">
+        兩個檢測都是<b>生活參考</b>，不是診斷，也不能取代專業評估。<br>
+        所有作答只留在這台裝置，不會上傳。
+      </p>
+    </div>
+
+    <button class="entry" data-test="big5">
+      <span class="ico">🧭</span>
+      <b>人格特質檢測</b>
+      <small>看你的五個性格向度偏向哪一邊。用理解自己與溝通方式，不是貼標籤。</small>
+      <span class="meta">20 題 ｜ 約 3 分鐘</span>
+      <span class="go">›</span>
+    </button>
+
+    <button class="entry" data-test="tcm">
+      <span class="ico">🌿</span>
+      <b>中醫體質檢測</b>
+      <small>依九種體質分類的概念，看你偏向哪幾種。多數人是兼夾體質，不是單一種。</small>
+      <span class="meta">24 題 ｜ 約 4 分鐘</span>
+      <span class="go">›</span>
+    </button>
+
+    <p class="disc">
+      本系列工具僅供生活參考，<b>非醫療診斷</b>，不提供藥物、方劑、療效或治療建議。<br>
+      身體有不適請就醫，由醫師親自評估。
+    </p>
+    <p class="stamp">資料僅在本機運算，不會上傳</p>
+  </div>
+
+  <!-- ══ 作答 ══ -->
+  <div id="quiz" class="hide">
+    <div class="qbar">
+      <div class="track"><i id="prog"></i></div>
+      <div class="txt"><span id="progtxt">0 / 0</span></div>
+    </div>
+    <div class="card">
+      <h2><span class="n">?</span><span id="qtitle">作答</span></h2>
+      <div class="legend"><span>非常不同意</span><span>非常同意</span></div>
+      <div id="qlist"></div>
+    </div>
+    <button class="btn" id="submit" disabled>看結果</button>
+    <button class="btn ghost" id="back" style="margin-top:10px">‹ 回上一頁</button>
+    <p class="note" style="font-size:11.5px;color:#a8bcc5;text-align:center;margin-top:12px">
+      請依直覺作答，不必想太久
+    </p>
+  </div>
+
+  <!-- ══ 結果 ══ -->
+  <div id="result" class="hide">
+    <div id="rout"></div>
+    <button class="btn ghost" id="again" style="margin-top:6px">重新作答</button>
+    <button class="btn ghost" id="pr" style="margin-top:10px">列印 / 存成 PDF</button>
+  </div>
+
+  <div class="askbar">
+    <div class="txt"><b>使用軟體有問題請洽</b>LINE 免費協助</div>
+    <a href="https://line.me/R/ti/p/~Qboywang" target="_blank" rel="noopener">💬 LINE 諮詢</a>
+  </div>
+</main>
+<script>
+(function(){
+"use strict";
+var $ = function(id){ return document.getElementById(id); };
+
+/* ══════ 題庫 ══════ */
+
+/* ── 人格特質：五大向度，各 4 題，R = 反向計分 ── */
+var BIG5 = {
+  title: '人格特質檢測',
+  legend: ['非常不同意','非常同意'],
+  dims: [
+    { key:'O', name:'開放性', desc:'好奇、想像力、接受新事物' },
+    { key:'C', name:'盡責性', desc:'有條理、負責、自律' },
+    { key:'E', name:'外向性', desc:'社交、活力、主動' },
+    { key:'A', name:'親和性', desc:'合作、體貼、信任' },
+    { key:'N', name:'情緒敏感度', desc:'容易緊張、情緒起伏' }
+  ],
+  qs: [
+    { d:'O', t:'我常對新事物感到好奇，會主動去了解。' },
+    { d:'O', t:'我喜歡用不一樣的方法解決問題。' },
+    { d:'O', t:'音樂、藝術或文字常常能打動我。' },
+    { d:'O', t:'我偏好照熟悉的方式做事，不太想嘗試新的。', r:1 },
+
+    { d:'C', t:'我做事之前通常會先規劃。' },
+    { d:'C', t:'我答應別人的事，一定會做到。' },
+    { d:'C', t:'我的東西通常擺放有序，需要時找得到。' },
+    { d:'C', t:'我常拖到最後一刻才動手。', r:1 },
+
+    { d:'E', t:'在陌生的場合，我通常會主動和人交談。' },
+    { d:'E', t:'和一群人在一起時，我感覺有活力。' },
+    { d:'E', t:'我喜歡熱鬧的場合。' },
+    { d:'E', t:'我需要很多獨處時間，長時間社交讓我疲累。', r:1 },
+
+    { d:'A', t:'我願意花時間幫別人，即使對自己沒好處。' },
+    { d:'A', t:'我通常先相信別人，除非有理由讓我懷疑。' },
+    { d:'A', t:'別人犯錯時，我傾向體諒而不是責備。' },
+    { d:'A', t:'我說話直接，不太在意會不會傷到人。', r:1 },
+
+    { d:'N', t:'我常擔心還沒發生的事。' },
+    { d:'N', t:'遇到壓力時，我容易感到不安或煩躁。' },
+    { d:'N', t:'小事出錯，我會放在心裡很久。' },
+    { d:'N', t:'大多數時候我的情緒穩定，不容易被影響。', r:1 }
+  ]
+};
+
+/* ── 中醫體質：八種，各 3 題（平和質由其他偏低推得）── */
+var TCM = {
+  title: '中醫體質檢測',
+  legend: ['沒有','總是'],
+  dims: [
+    { key:'qi',    name:'氣虛',  desc:'容易疲倦、說話無力' },
+    { key:'yang',  name:'陽虛',  desc:'怕冷、手腳冰冷' },
+    { key:'yin',   name:'陰虛',  desc:'口乾、容易燥熱' },
+    { key:'tan',   name:'痰濕',  desc:'身體沉重、易囤脂肪' },
+    { key:'shi',   name:'濕熱',  desc:'出油、口苦、黏膩' },
+    { key:'xue',   name:'血瘀',  desc:'易瘀青、固定疼痛' },
+    { key:'yu',    name:'氣鬱',  desc:'胸悶、易嘆氣、情緒低' },
+    { key:'te',    name:'特稟',  desc:'易過敏、鼻塞、皮膚癢' }
+  ],
+  qs: [
+    { d:'qi',   t:'我容易疲倦，即使睡飽了還是覺得沒力。' },
+    { d:'qi',   t:'我說話聲音偏小，講久了會累。' },
+    { d:'qi',   t:'我稍微活動就喘，或比別人容易出汗。' },
+
+    { d:'yang', t:'我的手腳經常冰冷。' },
+    { d:'yang', t:'我比別人怕冷，別人覺得剛好我會覺得冷。' },
+    { d:'yang', t:'我吃到冷的食物或飲料會不舒服。' },
+
+    { d:'yin',  t:'我常覺得口乾，喝水也不太解渴。' },
+    { d:'yin',  t:'我晚上容易覺得熱，手心腳心發熱。' },
+    { d:'yin',  t:'我睡覺容易出汗，或睡得不安穩。' },
+
+    { d:'tan',  t:'我容易覺得身體沉重、四肢懶。' },
+    { d:'tan',  t:'我的腹部容易囤積脂肪，體重不好降。' },
+    { d:'tan',  t:'我常覺得喉嚨有痰，或口中黏膩。' },
+
+    { d:'shi',  t:'我臉上容易出油或長痘。' },
+    { d:'shi',  t:'我容易口苦，或有明顯的口氣。' },
+    { d:'shi',  t:'我的大便容易黏，解不乾淨。' },
+
+    { d:'xue',  t:'我的皮膚容易出現瘀青。' },
+    { d:'xue',  t:'我身體常有固定位置的疼痛。' },
+    { d:'xue',  t:'我的嘴唇或膚色偏暗。' },
+
+    { d:'yu',   t:'我常覺得胸口悶，深呼吸才舒服。' },
+    { d:'yu',   t:'我容易嘆氣。' },
+    { d:'yu',   t:'我情緒容易低落或煩躁。' },
+
+    { d:'te',   t:'我容易打噴嚏、鼻塞或皮膚癢。' },
+    { d:'te',   t:'我對某些食物或環境會過敏。' },
+    { d:'te',   t:'我的皮膚容易起疹子。' }
+  ]
+};
+
+var TESTS = { big5: BIG5, tcm: TCM };
+
+/* ══════ 狀態 ══════ */
+var cur = null;      /* 'big5' | 'tcm' */
+var ans = [];        /* 1..5，0 = 未答 */
+
+/* ══════ 畫面切換 ══════ */
+function show(view){
+  ['home','quiz','result'].forEach(function(v){
+    $(v).classList.toggle('hide', v !== view);
+  });
+  window.scrollTo(0,0);
+}
+
+/* ══════ 開始作答 ══════ */
+function start(key){
+  cur = key;
+  var T = TESTS[key];
+  ans = T.qs.map(function(){ return 0; });
+  $('htitle').innerText = T.title;
+  $('hsub').innerText = '共 ' + T.qs.length + ' 題 ｜ 依直覺作答 ｜ 資料不外傳';
+  $('qtitle').innerText = T.title;
+
+  var leg = document.querySelector('.legend');
+  leg.children[0].innerText = T.legend[0];
+  leg.children[1].innerText = T.legend[1];
+
+  var box = $('qlist');
+  box.innerHTML = '';
+  T.qs.forEach(function(q, i){
+    var d = document.createElement('div');
+    d.className = 'qrow';
+    var btns = '';
+    for (var v=1; v<=5; v++){
+      btns += '<button data-q="'+i+'" data-v="'+v+'">'+v+'</button>';
+    }
+    d.innerHTML = '<div class="qt"><em>'+(i+1)+'.</em>'+q.t+'</div>'+
+                  '<div class="likert">'+btns+'</div>';
+    box.appendChild(d);
+  });
+
+  updateProgress();
+  show('quiz');
+}
+
+/* ══════ 作答 ══════ */
+function updateProgress(){
+  var n = ans.filter(function(a){ return a>0; }).length;
+  var total = ans.length;
+  $('progtxt').innerText = n + ' / ' + total;
+  $('prog').style.width = (total ? (n/total*100) : 0) + '%';
+  var done = n === total;
+  $('submit').disabled = !done;
+  $('submit').innerText = done ? '看結果' : '還有 ' + (total-n) + ' 題';
+}
+
+$('qlist').addEventListener('click', function(e){
+  var t = e.target;
+  if (t.tagName !== 'BUTTON') return;
+  var q = +t.dataset.q, v = +t.dataset.v;
+  ans[q] = v;
+  var row = t.parentNode;
+  Array.prototype.forEach.call(row.children, function(b){
+    b.classList.toggle('on', +b.dataset.v === v);
+  });
+  updateProgress();
+});
+
+/* ══════ 計分：通用 0–100 轉化分 ══════ */
+function scoreDim(T, dimKey){
+  var qs = T.qs.filter(function(q){ return q.d === dimKey; });
+  var raw = 0;
+  qs.forEach(function(q){
+    var i = T.qs.indexOf(q);
+    var v = ans[i];
+    if (q.r) v = 6 - v;
+    raw += v;
+  });
+  var n = qs.length;
+  return { raw: raw, n: n, pct: Math.round((raw - n) / (n*4) * 100) };
+}
+
+/* ══════ 結果 ══════ */
+function level(pct){
+  if (pct >= 67) return 'hi';
+  if (pct >= 34) return 'mid';
+  return 'lo';
+}
+function levelText(pct){
+  if (pct >= 67) return '偏高';
+  if (pct >= 34) return '中等';
+  return '偏低';
+}
+
+/* 人格：各向度說明（高／低各一句，中性描述） */
+var BIG5_TXT = {
+  O: { hi:'你對新事物有興趣，喜歡嘗試不同做法，也容易被想法或美感打動。',
+       mid:'你對新事物保持開放，但也需要熟悉感，會在兩者之間取得平衡。',
+       lo:'你偏好熟悉、確定的做法，變動太多會讓你不太舒服。' },
+  C: { hi:'你習慣先規劃再做，答應的事會完成，環境也維持得有序。',
+       mid:'你有一定的計劃性，但也能接受臨時變動。',
+       lo:'你比較隨性，規劃與收尾常靠當下狀態，容易拖到最後。' },
+  E: { hi:'你從人群得到能量，主動開口對你不難，也喜歡熱鬧。',
+       mid:'你可以社交，也需要獨處，兩邊都能適應。',
+       lo:'獨處讓你恢復，長時間社交會消耗你，你偏好少而深的關係。' },
+  A: { hi:'你傾向體諒與合作，願意先相信別人。',
+       mid:'你會看情況決定要不要讓步，不是一味配合。',
+       lo:'你講求直接與效率，有時會被感覺較為強硬。' },
+  N: { hi:'你對壓力與風險較敏感，容易反覆想，情緒起伏也較明顯。',
+       mid:'你的情緒大致穩定，遇到較大壓力時才受影響。',
+       lo:'你情緒穩定，不容易被小事影響，但也可能忽略自己的疲累。' }
+};
+
+/* 中醫：各體質的生活方向（只寫作息與就醫，不寫藥材、方劑、療效） */
+var TCM_TXT = {
+  qi:   '常見的生活方向是作息規律、睡眠充足、避免一次過度勞累，並且不要空腹太久。',
+  yang: '常見的生活方向是注意保暖（尤其腹部與下肢）、少喝冰冷飲品、飲食以溫熱為主。',
+  yin:  '常見的生活方向是補充足夠水分、避免熬夜與過度勞累、少吃辛辣燥熱的食物。',
+  tan:  '常見的生活方向是規律運動、減少甜食與油炸、晚間不要吃太飽。',
+  shi:  '常見的生活方向是清淡飲食、減少油炸與含糖飲料、保持排便順暢。',
+  xue:  '常見的生活方向是規律活動、避免久坐不動、注意姿勢與保暖。',
+  yu:   '常見的生活方向是安排規律活動與日照、保留讓自己放鬆的時間、把壓力說出來。',
+  te:   '常見的生活方向是留意並避開已知的過敏原、保持環境清潔與通風。'
+};
+
+function renderBig5(){
+  var T = BIG5;
+  var scores = T.dims.map(function(d){
+    var s = scoreDim(T, d.key);
+    return { d:d, pct:s.pct };
+  });
+
+  /* 最高的兩個向度 */
+  var sorted = scores.slice().sort(function(a,b){ return b.pct - a.pct; });
+  var top = sorted.slice(0,2);
+
+  var h = '';
+  h += '<div class="card">';
+  h += '<h2><span class="n">✓</span>你的結果</h2>';
+  h += '<div class="big"><b>'+top[0].d.name+' × '+top[1].d.name+'</b>'+
+       '<small>最明顯的兩個向度</small></div>';
+  h += '<p style="margin:0;font-size:13.5px;color:#5c7480;line-height:1.7">'+
+       '這五個向度沒有好壞，只是偏向。同一個人在不同情境、不同時期，分數也會變動。'+
+       '看的是「你現在比較常出現的樣子」，不是固定的標籤。</p>';
+  h += '</div>';
+
+  h += '<div class="card"><h2><span class="n">◎</span>五個向度</h2>';
+  scores.forEach(function(s){
+    var lv = level(s.pct);
+    h += '<div class="dim">'+
+         '<div class="top"><b>'+s.d.name+'<span class="sc">'+s.pct+'</span></b>'+
+         '<span class="lv '+lv+'">'+levelText(s.pct)+'</span></div>'+
+         '<div class="bar"><i class="'+lv+'" style="width:'+s.pct+'%"></i></div>'+
+         '<p>'+BIG5_TXT[s.d.key][lv]+'</p>'+
+         '</div>';
+  });
+  h += '</div>';
+
+  /* 兩句實用提醒 */
+  h += '<div class="card"><h2><span class="n">→</span>可以怎麼用</h2>';
+  var notes = [];
+  var nS = scores.filter(function(s){ return s.d.key==='N'; })[0];
+  var eS = scores.filter(function(s){ return s.d.key==='E'; })[0];
+  var cS = scores.filter(function(s){ return s.d.key==='C'; })[0];
+  var aS = scores.filter(function(s){ return s.d.key==='A'; })[0];
+
+  if (nS.pct >= 67) notes.push('你對壓力較敏感。把「擔心的事寫下來、分成能處理與不能處理」，比反覆想有效。');
+  if (eS.pct <= 33) notes.push('你靠獨處恢復。把重要會議或社交安排在精神好的時段，中間留緩衝，會比硬撐有效率。');
+  if (cS.pct <= 33) notes.push('你比較隨性。用「先做五分鐘」開頭，比要求自己一次做完容易啟動。');
+  if (aS.pct <= 33) notes.push('你講話直接。同樣的意思加上一句「我想先了解你的想法」，對方接受度會差很多。');
+  if (!notes.length) notes.push('你的五個向度多在中等範圍，屬於能隨情境調整的類型。');
+  notes.forEach(function(t){ h += '<p style="margin:0 0 10px;font-size:13.5px;color:#5c7480;line-height:1.7">• '+t+'</p>'; });
+  h += '</div>';
+
+  h += disclaimer('人格檢測');
+  return h;
+}
+
+function renderTCM(){
+  var T = TCM;
+  var scores = T.dims.map(function(d){
+    var s = scoreDim(T, d.key);
+    return { d:d, pct:s.pct };
+  }).sort(function(a,b){ return b.pct - a.pct; });
+
+  var high = scores.filter(function(s){ return s.pct >= 40; });
+  var likely = scores.filter(function(s){ return s.pct >= 30 && s.pct < 40; });
+
+  var h = '';
+  h += '<div class="card">';
+  h += '<h2><span class="n">✓</span>你的結果</h2>';
+
+  if (high.length){
+    h += '<div class="big"><b>'+high.map(function(s){ return s.d.name; }).join('、')+'</b>'+
+         '<small>分數較明顯的體質偏向</small></div>';
+    h += '<p style="margin:0;font-size:13.5px;color:#5c7480;line-height:1.7">'+
+         '多數人同時有兩種以上偏向，這很正常。下面是每一項的分數，請看整體，不要只看最高的那一項。</p>';
+  } else if (likely.length){
+    h += '<div class="big"><b>'+likely.map(function(s){ return s.d.name; }).join('、')+'</b>'+
+         '<small>輕微偏向</small></div>';
+    h += '<p style="margin:0;font-size:13.5px;color:#5c7480;line-height:1.7">'+
+         '各項分數都不高，只有輕微偏向。整體來說沒有明顯偏向。</p>';
+  } else {
+    h += '<div class="big"><b>各項都偏低</b><small>沒有明顯的體質偏向</small></div>';
+    h += '<p style="margin:0;font-size:13.5px;color:#5c7480;line-height:1.7">'+
+         '你的作答在各項都不明顯。這只代表這份簡化問卷的結果，不代表身體狀況的判斷。</p>';
+  }
+  h += '</div>';
+
+  h += '<div class="card"><h2><span class="n">◎</span>各項分數</h2>';
+  scores.forEach(function(s){
+    var lv = s.pct >= 40 ? 'hi' : (s.pct >= 30 ? 'mid' : 'lo');
+    h += '<div class="dim">'+
+         '<div class="top"><b>'+s.d.name+'<span class="sc">'+s.pct+'</span></b>'+
+         '<span class="lv '+lv+'">'+(s.pct>=40?'明顯':(s.pct>=30?'輕微':'不明顯'))+'</span></div>'+
+         '<div class="bar"><i class="'+(s.pct>=40?'hi':(s.pct>=30?'':'lo'))+'" style="width:'+s.pct+'%"></i></div>'+
+         (s.pct >= 30 ? '<p>'+TCM_TXT[s.d.key]+'</p>' : '')+
+         '</div>';
+  });
+  h += '<p style="margin:12px 0 0;font-size:12px;color:#a8bcc5;line-height:1.6">'+
+       '分數為這份簡化問卷的轉化分（0–100），非完整量表結果。</p>';
+  h += '</div>';
+
+  /* 就醫提示 */
+  if (high.length){
+    h += '<div class="card"><h2><span class="n">!</span>建議</h2>';
+    h += '<div class="amber">你勾選的項目中有幾項分數較明顯。如果這些情況<b>已經影響到日常生活</b>'+
+         '（例如持續疲倦、睡不好、疼痛、情緒低落），建議找中醫師或西醫師實際看診，'+
+         '由醫師親自評估，不要只依這份問卷自行判斷。</div>';
+    h += '</div>';
+  }
+
+  h += disclaimer('體質檢測');
+  return h;
+}
+
+function disclaimer(kind){
+  return '<div class="card" style="background:#fbfdfe;border:1px solid #e3ecef">'+
+    '<p style="margin:0;font-size:12.5px;color:#7d949e;line-height:1.75">'+
+    '本'+kind+'為<b>生活參考</b>，非醫療診斷，不能取代醫師診察。<br>'+
+    '不提供藥物、方劑、療效或治療建議。身體有不適請就醫。<br>'+
+    '作答內容只留在這台裝置，不會上傳。</p></div>';
+}
+
+/* ══════ 顯示結果 ══════ */
+function showResult(){
+  var h = cur === 'big5' ? renderBig5() : renderTCM();
+  $('rout').innerHTML = h;
+  $('htitle').innerText = TESTS[cur].title + '結果';
+  $('hsub').innerText = '生活參考，非診斷 ｜ 資料不外傳';
+  show('result');
+}
+
+/* ══════ 事件 ══════ */
+document.querySelectorAll('.entry').forEach(function(b){
+  b.addEventListener('click', function(){ start(b.dataset.test); });
+});
+$('submit').addEventListener('click', showResult);
+$('back').addEventListener('click', function(){
+  $('htitle').innerText = '自我檢測';
+  $('hsub').innerText = '人格特質 ｜ 中醫體質 ｜ 純本機計算，資料不外傳';
+  show('home');
+});
+$('again').addEventListener('click', function(){ start(cur); });
+$('pr').addEventListener('click', function(){ window.print(); });
+
+/* 離線快取 */
+if ('serviceWorker' in navigator){
+  window.addEventListener('load', function(){
+    navigator.serviceWorker.register('./sw.js').catch(function(){});
+  });
+}
+
+})();
+</script>
+</body>
+</html>
