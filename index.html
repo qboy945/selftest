@@ -10,7 +10,7 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="自我檢測">
 <meta name="description" content="人格特質與中醫體質自我檢測。純本機計算，不上傳任何資料。">
-<title>緣來喝茶自我檢測</title>
+<title>緣來喝茶-知己人生APP</title>
 <style>
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
 body{margin:0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Noto Sans TC","Microsoft JhengHei",sans-serif;
@@ -18,8 +18,8 @@ body{margin:0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Noto Sans
 header{background:linear-gradient(135deg,#1f4e5f,#2e7d8f);color:#fff;padding:22px 18px 18px;position:sticky;top:0;z-index:10;
   box-shadow:0 2px 12px rgba(0,0,0,.18)}
 header .brand{font-size:12px;font-weight:600;letter-spacing:1.5px;color:rgba(255,255,255,.82);margin-bottom:4px}
-header h1{margin:0;font-size:19px;font-weight:700;letter-spacing:.5px}
-header p{margin:6px 0 0;font-size:12.5px;opacity:.85}
+header h1{margin:0;font-size:22px;font-weight:800;letter-spacing:.3px;line-height:1.3}
+header p{margin:7px 0 0;font-size:13.5px;opacity:.9;line-height:1.55}
 main{padding:16px 14px;max-width:560px;margin:0 auto}
 .card{background:#fff;border-radius:14px;padding:16px;margin-bottom:14px;box-shadow:0 1px 4px rgba(20,50,60,.08)}
 .card h2{margin:0 0 14px;font-size:15px;font-weight:700;color:#1f4e5f;padding-bottom:9px;
@@ -105,8 +105,7 @@ main{padding:16px 14px;max-width:560px;margin:0 auto}
 </head>
 <body>
 <header>
-  <div class="brand">緣來喝茶圓滿人生</div>
-  <h1 id="htitle">自我檢測</h1>
+  <h1 id="htitle">緣來喝茶-知己人生APP</h1>
   <p id="hsub">16 型人格 ｜ 五大性格 ｜ 中醫體質 ｜ 純本機計算，資料不外傳</p>
 </header>
 
@@ -368,8 +367,8 @@ function start(key){
   cur = key;
   var T = TESTS[key];
   ans = T.qs.map(function(){ return 0; });
-  $('htitle').innerText = T.title;
-  $('hsub').innerText = '共 ' + T.qs.length + ' 題 ｜ 依直覺作答 ｜ 資料不外傳';
+  $('htitle').innerText = '緣來喝茶-知己人生APP';
+  $('hsub').innerText = T.title + ' ｜ 共 ' + T.qs.length + ' 題 ｜ 依直覺作答';
   $('qtitle').innerText = T.title;
 
   var leg = document.querySelector('.legend');
@@ -694,8 +693,8 @@ function disclaimer(kind){
 function showResult(){
   var h = cur === 'sixteen' ? renderSixteen() : (cur === 'big5' ? renderBig5() : renderTCM());
   $('rout').innerHTML = h;
-  $('htitle').innerText = TESTS[cur].title + '結果';
-  $('hsub').innerText = '生活參考，非診斷 ｜ 資料不外傳';
+  $('htitle').innerText = '緣來喝茶-知己人生APP';
+  $('hsub').innerText = TESTS[cur].title + '結果 ｜ 生活參考，非診斷 ｜ 資料不外傳';
   show('result');
 }
 
@@ -705,13 +704,13 @@ document.querySelectorAll('.entry').forEach(function(b){
 });
 $('submit').addEventListener('click', showResult);
 $('back').addEventListener('click', function(){
-  $('htitle').innerText = '自我檢測';
+  $('htitle').innerText = '緣來喝茶-知己人生APP';
   $('hsub').innerText = '16 型人格 ｜ 五大性格 ｜ 中醫體質 ｜ 純本機計算，資料不外傳';
   show('home');
 });
 $('again').addEventListener('click', function(){ start(cur); });
 $('home2').addEventListener('click', function(){
-  $('htitle').innerText = '自我檢測';
+  $('htitle').innerText = '緣來喝茶-知己人生APP';
   $('hsub').innerText = '16 型人格 ｜ 五大性格 ｜ 中醫體質 ｜ 純本機計算，資料不外傳';
   show('home');
 });
