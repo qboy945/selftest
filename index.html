@@ -58,6 +58,13 @@ main{padding:16px 14px;max-width:560px;margin:0 auto}
   background:#f7fafb;border:1.5px solid #e3ecef;border-radius:9px;cursor:pointer}
 .likert button.on{background:#1f4e5f;border-color:#1f4e5f;color:#fff}
 .legend{display:flex;justify-content:space-between;font-size:11px;color:#a8bcc5;margin:0 2px 8px}
+.choice{display:flex;flex-direction:column;gap:7px}
+.choice button{text-align:left;padding:11px 13px;font-family:inherit;font-size:14px;line-height:1.5;
+  color:#3c5158;background:#f7fafb;border:1.5px solid #e3ecef;border-radius:10px;cursor:pointer}
+.choice button.on{background:#eef6f8;border-color:#1f4e5f;color:#12333f;font-weight:600}
+.choice button .k{display:inline-block;min-width:17px;height:17px;line-height:17px;text-align:center;
+  border-radius:50%;background:#dfe9ed;color:#5c7480;font-size:11px;font-weight:700;margin-right:7px}
+.choice button.on .k{background:#1f4e5f;color:#fff}
 /* 結果 */
 .big{text-align:center;padding:4px 0 14px}
 .big b{display:block;font-size:26px;font-weight:800;color:#1f4e5f;letter-spacing:-.5px;line-height:1.25}
@@ -100,7 +107,7 @@ main{padding:16px 14px;max-width:560px;margin:0 auto}
 <header>
   <div class="brand">緣來喝茶圓滿人生</div>
   <h1 id="htitle">自我檢測</h1>
-  <p id="hsub">人格特質 ｜ 中醫體質 ｜ 純本機計算，資料不外傳</p>
+  <p id="hsub">16 型人格 ｜ 五大性格 ｜ 中醫體質 ｜ 純本機計算，資料不外傳</p>
 </header>
 
 <main>
@@ -112,6 +119,14 @@ main{padding:16px 14px;max-width:560px;margin:0 auto}
         所有作答只留在這台裝置，不會上傳。
       </p>
     </div>
+
+    <button class="entry" data-test="sixteen">
+      <span class="ico">🧩</span>
+      <b>16 型人格檢測</b>
+      <small>四個維度，看你偏向哪一型。用理解自己與別人為什麼不一樣。</small>
+      <span class="meta">20 題 ｜ 約 3 分鐘 ｜ 最多人做</span>
+      <span class="go">›</span>
+    </button>
 
     <button class="entry" data-test="big5">
       <span class="ico">🧭</span>
@@ -159,6 +174,7 @@ main{padding:16px 14px;max-width:560px;margin:0 auto}
     <div id="rout"></div>
     <button class="btn ghost" id="again" style="margin-top:6px">重新作答</button>
     <button class="btn ghost" id="pr" style="margin-top:10px">列印 / 存成 PDF</button>
+    <button class="btn ghost" id="home2" style="margin-top:10px">‹ 回首頁選其他檢測</button>
   </div>
 
   <div class="askbar">
@@ -261,7 +277,79 @@ var TCM = {
   ]
 };
 
-var TESTS = { big5: BIG5, tcm: TCM };
+
+/* ── 16 型人格：四維度 × 5 題，每題二選一 ── */
+var SIXTEEN = {
+  title: '16 型人格檢測',
+  kind: 'choice',
+  legend: ['',''],
+  dims: [
+    { key:'EI', a:'E', b:'I', an:'外向', bn:'內向' },
+    { key:'SN', a:'S', b:'N', an:'實感', bn:'直覺' },
+    { key:'TF', a:'T', b:'F', an:'思考', bn:'情感' },
+    { key:'JP', a:'J', b:'P', an:'判斷', bn:'知覺' }
+  ],
+  qs: [
+    /* E / I */
+    { d:'EI', a:'和一群人出去走走', b:'一個人待著充電' },
+    { d:'EI', a:'先講出想法，邊說邊整理', b:'先聽完再想，想清楚才開口' },
+    { d:'EI', a:'主動開話題', b:'等對方先開口' },
+    { d:'EI', a:'還有精神，覺得開心', b:'覺得累，需要獨處' },
+    { d:'EI', a:'同時跟一群人相處', b:'跟一兩個人深聊' },
+    /* S / N */
+    { d:'SN', a:'具體步驟怎麼做', b:'背後的原理是什麼' },
+    { d:'SN', a:'親眼看過、實際驗證過的', b:'直覺與整體感覺' },
+    { d:'SN', a:'講清楚細節與順序', b:'講重點與意義' },
+    { d:'SN', a:'眼前要處理的事', b:'未來可能發生的事' },
+    { d:'SN', a:'熟悉可靠的做法', b:'新的、還沒試過的做法' },
+    /* T / F */
+    { d:'TF', a:'哪個方案合理', b:'哪個方案對人比較好' },
+    { d:'TF', a:'幫他想辦法', b:'聽他說，讓他舒服一點' },
+    { d:'TF', a:'邏輯講不通', b:'說話傷到人' },
+    { d:'TF', a:'直接講事實', b:'先顧對方感受' },
+    { d:'TF', a:'我的能力被看見', b:'我這個人被接納' },
+    /* J / P */
+    { d:'JP', a:'先排好行程', b:'到當地再看' },
+    { d:'JP', a:'提早做完比較安心', b:'期限前衝刺比較有效率' },
+    { d:'JP', a:'覺得被打亂，有點煩', b:'覺得還好，隨機應變' },
+    { d:'JP', a:'事情有明確結論', b:'保留選項，先不定' },
+    { d:'JP', a:'東西有固定位置', b:'亂中有序，我找得到' }
+  ]
+};
+
+/* 16 型：只在四組對立維度上做描述，不寫職業、不寫對象建議 */
+var T16 = {
+  ISTJ:{n:'務實盡責', d:'你靠得住，答應的事會做到。習慣依經驗與既定做法處理事情，不喜歡臨時變動。別人找你，通常是因為事情交給你會完成。'},
+  ISFJ:{n:'溫和守護', d:'你注意別人的需要，常在小地方照顧人。做事細心、有耐性，傾向維持和諧，不太主動爭。累了也不一定會說。'},
+  INFJ:{n:'深思洞察', d:'你對人的狀態敏感，常看見別人沒說出口的部分。心裡有一套自己的標準，不容易被說服，但也不常講出來。'},
+  INTJ:{n:'獨立策劃', d:'你習慣先想清楚整體再動手，喜歡把事情系統化。不太在意別人的看法，更在意自己的想法是否站得住。'},
+  ISTP:{n:'冷靜動手', d:'你話不多，但遇到問題會直接動手解決。喜歡弄清楚東西怎麼運作，討厭多餘的規定與空談。'},
+  ISFP:{n:'隨性溫和', d:'你按自己的步調走，不喜歡被安排。對美感與當下的感受敏銳，衝突時傾向避開而不是正面對抗。'},
+  INFP:{n:'理想內省', d:'你在意事情對不對、符不符合自己的價值。內心戲多，不太對外講，但對在乎的人很投入。'},
+  INTP:{n:'邏輯探索', d:'你喜歡分析與拆解，常在想「為什麼是這樣」。想法很多，但落實成行動需要多一點推力。'},
+  ESTP:{n:'行動靈活', d:'你反應快，遇到狀況先做再說。喜歡實際、有變化的場合，受不了冗長的討論與事前規劃。'},
+  ESFP:{n:'熱情即興', d:'你容易帶動氣氛，享受當下。不喜歡被計畫綁住，事情臨時變動對你影響不大。'},
+  ENFP:{n:'好奇感染', d:'你對新的人事物有興趣，想法多、也容易感染別人。開始很多事，收尾需要刻意安排。'},
+  ENTP:{n:'辯才點子', d:'你喜歡討論與挑戰既有說法，點子來得快。規則對你來說是可以討論的，不是一定要遵守的。'},
+  ESTJ:{n:'果斷執行', d:'你重視效率與秩序，習慣把事情安排清楚、分工明確。有意見會直接說，不繞彎。'},
+  ESFJ:{n:'熱心協調', d:'你關注群體的气氛與每個人的狀態，常主動串聯。希望被需要，也容易因為別人的評價受影響。'},
+  ENFJ:{n:'鼓舞帶領', d:'你會注意到別人的潛力，也願意花力氣推一把。在意關係的和諧，但壓力常自己吸收。'},
+  ENTJ:{n:'目標統籌', d:'你看方向、定目標、抓進度，習慣把事情往前推。對沒有效率的作法耐性低。'}
+};
+
+/* 四維度說明 */
+var DIM16 = {
+  EI:{ a:['E 外向','從人群與互動中得到能量，先說再想'],
+       b:['I 內向','從獨處中得到能量，先想再說'] },
+  SN:{ a:['S 實感','看具體事實與細節，信任經驗'],
+       b:['N 直覺','看整體脈絡與可能性，信任靈感'] },
+  TF:{ a:['T 思考','以邏輯與一致性做判斷'],
+       b:['F 情感','以人的感受與關係做判斷'] },
+  JP:{ a:['J 判斷','喜歡把事情定下來，提早完成'],
+       b:['P 知覺','喜歡保留彈性，最後關頭發揮'] }
+};
+
+var TESTS = { sixteen: SIXTEEN, big5: BIG5, tcm: TCM };
 
 /* ══════ 狀態 ══════ */
 var cur = null;      /* 'big5' | 'tcm' */
@@ -290,15 +378,28 @@ function start(key){
 
   var box = $('qlist');
   box.innerHTML = '';
+  var isChoice = T.kind === 'choice';
+
+  /* 二選一題型：隱藏數字圖例 */
+  document.querySelector('.legend').style.display = isChoice ? 'none' : 'flex';
+
   T.qs.forEach(function(q, i){
     var d = document.createElement('div');
     d.className = 'qrow';
-    var btns = '';
-    for (var v=1; v<=5; v++){
-      btns += '<button data-q="'+i+'" data-v="'+v+'">'+v+'</button>';
+    if (isChoice){
+      d.innerHTML = '<div class="qt"><em>'+(i+1)+'.</em>下面兩種情況，哪一種比較像你？</div>'+
+        '<div class="choice">'+
+          '<button data-q="'+i+'" data-v="a"><span class="k">A</span>'+q.a+'</button>'+
+          '<button data-q="'+i+'" data-v="b"><span class="k">B</span>'+q.b+'</button>'+
+        '</div>';
+    } else {
+      var btns = '';
+      for (var v=1; v<=5; v++){
+        btns += '<button data-q="'+i+'" data-v="'+v+'">'+v+'</button>';
+      }
+      d.innerHTML = '<div class="qt"><em>'+(i+1)+'.</em>'+q.t+'</div>'+
+                    '<div class="likert">'+btns+'</div>';
     }
-    d.innerHTML = '<div class="qt"><em>'+(i+1)+'.</em>'+q.t+'</div>'+
-                  '<div class="likert">'+btns+'</div>';
     box.appendChild(d);
   });
 
@@ -308,7 +409,7 @@ function start(key){
 
 /* ══════ 作答 ══════ */
 function updateProgress(){
-  var n = ans.filter(function(a){ return a>0; }).length;
+  var n = ans.filter(function(a){ return a !== 0 && a !== '' && a !== undefined && a !== null; }).length;
   var total = ans.length;
   $('progtxt').innerText = n + ' / ' + total;
   $('prog').style.width = (total ? (n/total*100) : 0) + '%';
@@ -320,11 +421,13 @@ function updateProgress(){
 $('qlist').addEventListener('click', function(e){
   var t = e.target;
   if (t.tagName !== 'BUTTON') return;
-  var q = +t.dataset.q, v = +t.dataset.v;
+  var q = +t.dataset.q, raw = t.dataset.v;
+  var isChoice = TESTS[cur].kind === 'choice';
+  var v = isChoice ? raw : +raw;
   ans[q] = v;
   var row = t.parentNode;
   Array.prototype.forEach.call(row.children, function(b){
-    b.classList.toggle('on', +b.dataset.v === v);
+    b.classList.toggle('on', b.dataset.v === raw);
   });
   updateProgress();
 });
@@ -385,6 +488,88 @@ var TCM_TXT = {
   yu:   '常見的生活方向是安排規律活動與日照、保留讓自己放鬆的時間、把壓力說出來。',
   te:   '常見的生活方向是留意並避開已知的過敏原、保持環境清潔與通風。'
 };
+
+
+/* ══════ 16 型：計分 ══════ */
+function renderSixteen(){
+  var T = SIXTEEN;
+
+  /* 每個維度統計 a/b 票數 */
+  var tally = {};
+  T.dims.forEach(function(dm){ tally[dm.key] = { a:0, b:0 }; });
+  T.qs.forEach(function(q, i){
+    var v = ans[i];
+    if (v === 'a' || v === 'b') tally[q.d][v]++;
+  });
+
+  /* 組出四字母 */
+  var code = '', picks = [];
+  T.dims.forEach(function(dm){
+    var t = tally[dm.key];
+    var win = t.a >= t.b ? 'a' : 'b';
+    var letter = win === 'a' ? dm.a : dm.b;
+    var name = win === 'a' ? dm.an : dm.bn;
+    code += letter;
+    picks.push({
+      key: dm.key, letter: letter, name: name,
+      a: t.a, b: t.b,
+      pctA: Math.round(t.a / (t.a + t.b) * 100)
+    });
+  });
+
+  var info = T16[code] || { n:'', d:'' };
+
+  var h = '';
+  h += '<div class="card">';
+  h += '<h2><span class="n">✓</span>你的類型</h2>';
+  h += '<div class="big"><b>'+code+'</b><small>'+info.n+'</small></div>';
+  h += '<p style="margin:0;font-size:13.5px;color:#5c7480;line-height:1.75">'+info.d+'</p>';
+  h += '</div>';
+
+  /* 四個維度 */
+  h += '<div class="card"><h2><span class="n">◎</span>四個維度</h2>';
+  picks.forEach(function(pk){
+    var dm = SIXTEEN.dims.filter(function(x){ return x.key === pk.key; })[0];
+    var isA = (pk.letter === dm.a);
+    var info2 = DIM16[pk.key][isA ? 'a' : 'b'];
+    var pct = isA ? pk.pctA : (100 - pk.pctA);
+    var otherName = isA ? dm.bn : dm.an;
+    h += '<div class="dim">'+
+         '<div class="top"><b>'+info2[0]+'</b><span class="lv mid">'+pct+'%</span></div>'+
+         '<div class="bar"><i style="width:'+pct+'%"></i></div>'+
+         '<p>'+info2[1]+'</p>'+
+         '<p style="font-size:12px;color:#a8bcc5;margin-top:5px">'+
+            '這一邊 '+pct+'%　／　'+otherName+' '+(100-pct)+'%</p>'+
+         '</div>';
+  });
+  h += '</div>';
+
+  /* 傾向說明（中性、不給職業建議） */
+  h += '<div class="card"><h2><span class="n">→</span>怎麼看這個結果</h2>';
+  h += '<p style="margin:0 0 10px;font-size:13.5px;color:#5c7480;line-height:1.75">'+
+       '這四組是「偏向」，不是「只能這樣」。多數人在中間附近，換情境、換時期，結果可能不一樣。'+
+       '看的是你現在比較常出現的樣子，不是固定的標籤。</p>';
+  var notes2 = [];
+  picks.forEach(function(pk){
+    if (pk.pctA >= 80 || pk.pctA <= 20) notes2.push(pk.key);
+  });
+  if (notes2.length){
+    h += '<p style="margin:0 0 10px;font-size:13.5px;color:#5c7480;line-height:1.75">'+
+         '你的 '+notes2.length+' 個維度偏向比較明顯，代表這一邊的特質你比較常展現。'+
+         '其他維度在相對中間，比較能隨情況調整。</p>';
+  } else {
+    h += '<p style="margin:0;font-size:13.5px;color:#5c7480;line-height:1.75">'+
+         '你的四個維度都比較接近中間，屬於能隨情境切換的類型。這類人適應力通常不錯，但也比較難用一個標籤描述。</p>';
+  }
+  h += '</div>';
+
+  h += '<div class="card" style="background:#fbfdfe;border:1px solid #e3ecef">'+
+       '<p style="margin:0;font-size:12.5px;color:#7d949e;line-height:1.75">'+
+       '本檢測為<b>生活參考</b>，非心理衡鑑或診斷，不能取代專業評估。<br>'+
+       '結果不預測職業成就、不評斷人格好壞。作答內容只留在這台裝置，不會上傳。</p></div>';
+
+  return h;
+}
 
 function renderBig5(){
   var T = BIG5;
@@ -507,7 +692,7 @@ function disclaimer(kind){
 
 /* ══════ 顯示結果 ══════ */
 function showResult(){
-  var h = cur === 'big5' ? renderBig5() : renderTCM();
+  var h = cur === 'sixteen' ? renderSixteen() : (cur === 'big5' ? renderBig5() : renderTCM());
   $('rout').innerHTML = h;
   $('htitle').innerText = TESTS[cur].title + '結果';
   $('hsub').innerText = '生活參考，非診斷 ｜ 資料不外傳';
@@ -521,10 +706,15 @@ document.querySelectorAll('.entry').forEach(function(b){
 $('submit').addEventListener('click', showResult);
 $('back').addEventListener('click', function(){
   $('htitle').innerText = '自我檢測';
-  $('hsub').innerText = '人格特質 ｜ 中醫體質 ｜ 純本機計算，資料不外傳';
+  $('hsub').innerText = '16 型人格 ｜ 五大性格 ｜ 中醫體質 ｜ 純本機計算，資料不外傳';
   show('home');
 });
 $('again').addEventListener('click', function(){ start(cur); });
+$('home2').addEventListener('click', function(){
+  $('htitle').innerText = '自我檢測';
+  $('hsub').innerText = '16 型人格 ｜ 五大性格 ｜ 中醫體質 ｜ 純本機計算，資料不外傳';
+  show('home');
+});
 $('pr').addEventListener('click', function(){ window.print(); });
 
 /* 離線快取 */
